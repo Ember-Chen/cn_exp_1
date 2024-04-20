@@ -3,20 +3,20 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
  
-/**
- * 响应结果
- * 
- * @author zhaozheng
- *
- */
+
 public class Response {
- 
 	private OutputStream output;
-	
 	private  Request request;
-	
 	private static final int BUFFER_SIZE = 1024;
-	
+
+	private static final String ErrorMessage = 
+		"HTTP/1.1 404 File Not Found \r\n" +
+		"Content-Type: text/html\r\n" +
+		"Content-Length: 24\r\n" +
+		"\r\n" +
+		"<h1>File Not Found!</h1>";
+
+
 	public Response(OutputStream output) {
 		this.output = output;
 	}
@@ -28,31 +28,30 @@ public class Response {
 	//发送一个静态资源给客户端，若本地服务器有对应的文件则返回，否则返回404页面
 	public void sendStaticResource() {
 		byte[] buffer = new byte[BUFFER_SIZE];
-		int ch;
-		FileInputStream fis = null;
+		FileInputStream input_stream = null;
 		try {
-			File file = new File(HttpServer.WEB_ROOT, request.getUri());
-			if(file.exists()) {
-				fis = new FileInputStream(file);
-				ch = fis.read(buffer);
-				while(ch != -1) {
-					output.write(buffer, 0, ch);
-					ch = fis.read(buffer, 0, BUFFER_SIZE);
-				}
-			} else {
-				String errorMessage = "HTTP/1.1 404 File Not Found \r\n" +
-						"Content-Type: text/html\r\n" +
-						"Content-Length: 24\r\n" +
-						"\r\n" +
-						"<h1>File Not Found!</h1>";
-				output.write(errorMessage.getBytes());
+			File file = new File(HttpServer.ROOT, request.getUri());
+			String path = HttpServer.ROOT + request.getUri();
+			if(!file.exists()){
+				output.write(ErrorMessage.getBytes());
+				System.out.println("file not found");
+			}
+			else {
+				output.write("HTTP/1.1 200 OK\n".getBytes());
+                output.write("Content-Type: text/html; charset=UTF-8\n\n".getBytes());
+				// System.out.println("file path: " + path);
+				input_stream = new FileInputStream(path);
+				int readLength;
+                while((readLength = input_stream.read(buffer, 0, BUFFER_SIZE)) > 0 ) {
+                    output.write(buffer, 0, readLength);
+                }
 			}
 		} catch (Exception e) {
 			System.out.println(e.toString());
-		} finally {
-			if(fis != null) {
+		} finally { // 关闭fileInputStream
+			if(input_stream != null) {
 				try {
-					fis.close();
+					input_stream.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

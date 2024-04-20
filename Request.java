@@ -1,24 +1,11 @@
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
-   *接收到的请求串的具体格式如下：
-   * GET /aaa.htm HTTP/1.1
-   * Host: 127.0.0.1:8080
-   * Connection: keep-alive
-   * User-Agent: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.97 Safari/537.11
-   * Accept: text/html,application/xhtml+xml,application/xml;q=0.9,q=0.8
-   * Accept-Encoding: gzip,deflate,sdch
-   * Accept-Language: zh-CN,zh;q=0.8
-   * Accept-Charset: GBK,utf-8;q=0.7,*;q=0.3
-   * 
-   * @author zhaozheng
-   *
- */
+
 public class Request {
- 
 	private InputStream input;
 	private String uri;
+	private static final int BUFFER_SIZE = 2048;
 	
 	public Request(InputStream input) {
 		this.input = input;
@@ -26,7 +13,7 @@ public class Request {
 	
 	public void parser() {
 		StringBuffer request = new StringBuffer();
-		byte[] buffer = new byte[2048];
+		byte[] buffer = new byte[BUFFER_SIZE];
 		int i = 0;
 		
 		try {
@@ -41,23 +28,43 @@ public class Request {
 		}
 		
 		uri = parserUri(request.toString());
-		
 	}
-	
+
+	/** 示例
+	 * * GET /a.html HTTP/1.1
+	 * * ...
+	 */
 	private String parserUri(String requestData) {
-		int index1, index2;
-		index1 = requestData.indexOf(' ');
-		if(index1 != -1) {
-			index2 = requestData.indexOf(' ', index1 + 1);
-			if(index2 > index1) {
-				return requestData.substring(index1 + 1, index2);
-			}
-		}
-		
-		return null;
+		// System.out.println("------------- data start -------------");
+		// System.out.println(requestData);
+		// System.out.println("------------- data end -------------");
+		int index1 = requestData.indexOf(' ');
+		int index2 = requestData.indexOf(' ', index1 + 1);
+		if(index1==-1 || index2==-1)
+			return null;
+		return requestData.substring(index1 + 1, index2);
 	}
-	
+
 	public String getUri() {
 		return uri;
 	}
 }
+/**
+*接收到的请求串-示例:
+* GET /a.html HTTP/1.1
+* Host: localhost:8080
+* Connection: keep-alive
+* Cache-Control: max-age=0
+* sec-ch-ua: "Google Chrome";v="123", "Not:A-Brand";v="8", "Chromium";v="123"
+* sec-ch-ua-mobile: ?0
+* sec-ch-ua-platform: "Windows"
+* Upgrade-Insecure-Requests: 1
+* User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36
+* Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,
+* Sec-Fetch-Site: none
+* Sec-Fetch-Mode: navigate
+* Sec-Fetch-User: ?1
+* Sec-Fetch-Dest: document
+* Accept-Encoding: gzip, deflate, br, zstd
+* Accept-Language: zh-CN,zh;q=0.9
+*/
