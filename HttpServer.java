@@ -12,13 +12,11 @@ public class HttpServer {
 	public static final String ROOT = System.getProperty("user.dir") + File.separator + "webroot";
 	private boolean shutdown = false;
     private static final int PORT = 8080;
-	public static void main(String[] args) {
+	public HttpServer(){
 		System.out.println("ROOT: " + ROOT);
-		HttpServer server = new HttpServer();
-        server.start();
 	}
 	// 启动服务器，开始处理请求
-	public void  start() {
+	public void start(){
 		// 1 创建服务器端socket
 		ServerSocket serverSocket = null;
 	    try {
