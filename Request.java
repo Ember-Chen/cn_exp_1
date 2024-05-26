@@ -9,9 +9,10 @@ public class Request {
 	
 	public Request(InputStream input) {
 		this.input = input;
+		this.parser();
 	}
 	
-	public void parser() {
+	private void parser() {
 		StringBuffer request = new StringBuffer();
 		byte[] buffer = new byte[BUFFER_SIZE];
 		int i = 0;
@@ -30,14 +31,7 @@ public class Request {
 		uri = parserUri(request.toString());
 	}
 
-	/** 示例
-	 * * GET /a.html HTTP/1.1
-	 * * ...
-	 */
 	private String parserUri(String requestData) {
-		// System.out.println("------------- data start -------------");
-		// System.out.println(requestData);
-		// System.out.println("------------- data end -------------");
 		int index1 = requestData.indexOf(' ');
 		int index2 = requestData.indexOf(' ', index1 + 1);
 		if(index1==-1 || index2==-1)
@@ -49,8 +43,9 @@ public class Request {
 		return uri;
 	}
 }
+
 /**
-*接收到的请求串-示例:
+*接收到的请求-示例:
 * GET /a.html HTTP/1.1
 * Host: localhost:8080
 * Connection: keep-alive

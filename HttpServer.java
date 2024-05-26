@@ -43,11 +43,9 @@ public class HttpServer {
 				output = socket.getOutputStream();
 				// 2.2 接收请求
 				Request request = new Request(input);
-				request.parser();
 				System.out.println("uri: "+request.getUri());
 				// 2.3 处理请求并返回结果
-				Response response = new Response(output);
-				response.setRequest(request);
+				Response response = new Response(output,request.getUri());
 				response.sendStaticResource();
 				// 2.4 关闭socket
 				socket.close();
