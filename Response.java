@@ -16,6 +16,12 @@ public class Response {
 		"\r\n" +
 		"<h1>404 \t File Not Found!</h1>";
 
+	private static final String ShutdownMessage = 
+		"HTTP/1.1 200 OK\r\n" +
+		"Content-Type: text/html\r\n" +
+		"Content-Length: 24\r\n" +
+		"\r\n" +
+		"<h1>Server Shutdown!</h1>";
 
 	public Response(OutputStream output,String URI) {
 		this.output = output;
@@ -29,7 +35,11 @@ public class Response {
 		try {
 			File file = new File(HttpServer.ROOT, URI);
 			String path = HttpServer.ROOT + URI;
-			if(!file.exists()){
+			if(URI.equals("/shutdown")){
+				output.write(ShutdownMessage.getBytes());
+				System.out.println("server shutdown");
+			}
+			else if(!file.exists()){
 				output.write(ErrorMessage.getBytes());
 				System.out.println("file not found");
 			}

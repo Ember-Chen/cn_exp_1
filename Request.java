@@ -27,7 +27,7 @@ public class Request {
 		for(int k = 0; k < i; k++) {
 			request.append((char)buffer[k]);
 		}
-		
+		System.out.println("bytes count: "+i);
 		uri = parserUri(request.toString());
 	}
 
